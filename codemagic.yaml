@@ -1,18 +1,32 @@
 workflows:
-  react-native-android:
-    name: Build React Native Android
+  expo-android-debug:
+    name: Expo Android (Debug APK)
+    # Thư mục chứa source code (trong repo của bạn là 1-a1d7fc488bac)
+    working_directory: 1-a1d7fc488bac
+
     environment:
-      node: latest
-      npm: 8
+      node: 20
       java: 17
-      groups:
-        - keystore_credentials
+      vars:
+        EXPO_NO_TELEMETRY: "1"
+
+    cache:
+      cache_paths:
+        - ~/.npm
+        - $CM_BUILD_DIR/**/node_modules
+        - $CM_BUILD_DIR/**/.gradle
+
     scripts:
-      - name: Install dependencies
+      - name: Cài dependencies
         script: npm install
-      - name: Build Android APK
+
+      - name: Tạo thư mục android/ bằng Expo Prebuild
+        script: npx expo prebuild -p android --non-interactive
+
+      - name: Build APK debug
         script: |
           cd android
-          ./gradlew assembleRelease
+          ./gradlew assembleDebug
+
     artifacts:
-      - android/app/build/outputs/**/*.apk
+      - 1-a1d7fc488bac/android/app/build/outputs/apk/debug/app-debug.apk
