@@ -3,7 +3,7 @@ workflows:
     name: Build React Native Android
     environment:
       node: latest
-      npm: true
+      npm: 8
       java: 17
       groups:
         - keystore_credentials
