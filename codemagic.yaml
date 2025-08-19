@@ -1,7 +1,6 @@
 workflows:
-  expo-android-debug:
-    name: Expo Android (Debug APK)
-    # Thư mục chứa source code (trong repo của bạn là 1-a1d7fc488bac)
+  react-native-android:
+    name: React Native Android (Debug APK)
     working_directory: 1-a1d7fc488bac
 
     environment:
@@ -13,12 +12,26 @@ workflows:
     cache:
       cache_paths:
         - ~/.npm
+        - ~/.yarn
         - $CM_BUILD_DIR/**/node_modules
         - $CM_BUILD_DIR/**/.gradle
 
     scripts:
-      - name: Cài dependencies
-        script: npm install
+      - name: Kiểm tra package.json
+        script: |
+          if [ ! -f package.json ]; then
+            echo "❌ Không tìm thấy package.json trong thư mục 1-a1d7fc488bac"
+            exit 1
+          fi
+
+      - name: Cài dependencies (yarn nếu có, npm nếu không)
+        script: |
+          if [ -f yarn.lock ]; then
+            corepack enable
+            yarn install --frozen-lockfile
+          else
+            npm install --legacy-peer-deps
+          fi
 
       - name: Tạo thư mục android/ bằng Expo Prebuild
         script: npx expo prebuild -p android --non-interactive
